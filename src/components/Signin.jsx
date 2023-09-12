@@ -1,20 +1,25 @@
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { Formik, Field, Form } from "formik";
 import React, { useState, useEffect } from "react";
 import colors from "./Colors";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
+import { useDispatch } from "react-redux";
+import { addTherapistData } from "../store/slice/TherapistDataSlice";
 import {
   Box,
-  Flex,Spinner,
+  Flex,
+  Spinner,
   Text,
-  Button,Select,
+  Button,
+  Select,
   Stack,
   Image,
   VStack,
   FormControl,
-  FormLabel,useToast,
+  FormLabel,
+  useToast,
   Input,
   FormErrorMessage,
   Checkbox,
@@ -27,46 +32,60 @@ const initialValues = {
 const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
-  .min(8, "Password must be at least 8 characters")
-  .required("Password is required"),
+    .min(8, "Password must be at least 8 characters")
+    .required("Password is required"),
 });
 
-  
 export default function SignIn() {
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(true);
+  const [therapistData, setTherapistData] = useState("");
+  // const dispatch = useDispatch();
+
   const navigate = useNavigate();
-async function handleSubmit(values, resetForm)  {
-  try {
-    //console.log(values); // replace with your logic for submitting the form
-    const result = await axios.post('/login', values);
-    const { accessToken, refreshToken ,therapist} = result.data;
-    // Store tokens in local storage
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);  
-    localStorage.setItem('therapist', JSON.stringify(therapist));
-    // console.log('Access Token:', accessToken);
-    // console.log('Refresh Token:', refreshToken);
-    // console.log('Therapist Date',therapist)
-    toast({
-      title: "You have sign in successfully",
-      status: "success",
-      duration: 3000,
-      isClosable: true,
-    });
-    navigate('/dashboard',{ state: { therapist } });
-    // resetForm();
-  } catch (error) {
-    // Handle login error
-    //console.error('Login failed:', error);
-    toast({
-      title: "Sign In Failure",
-      status: "danger",
-      duration: 3000,
-      isClosable: true,
-    });
+  async function handleSubmit(values, resetForm) {
+    try {
+      //console.log(values); // replace with your logic for submitting the form
+      const result = await axios.post("/login", values);
+      console.log("result1: ", result.data.data);
+      setTherapistData(result.data.data);
+      const { accessToken, refreshToken } = result.data;
+      // Store tokens in local storage
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      const therapistData = localStorage.setItem(
+        "therapist",
+        JSON.stringify(result.data.data)
+      );
+      // dispatch(addTherapistData(therapistData));
+      const hello = localStorage.getItem("therapist");
+      console.log("result2: ", hello);
+      // console.log('Access Token:', accessToken);
+      // console.log('Refresh Token:', refreshToken);
+      // console.log('Therapist Date',therapist)
+      // useEffect(() => {
+      // dispatch(addTherapistData(therapistData));
+      // }, [therapistData]);
+      toast({
+        title: "You have sign in successfully",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      // navigate("/dashboard", { state: { therapist } });
+      navigate("/forum");
+      // resetForm();
+    } catch (error) {
+      // Handle login error
+      //console.error('Login failed:', error);
+      toast({
+        title: "Sign In Failure",
+        status: "danger",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   }
-};
   //for spinner
   const handleImageLoad = () => {
     setIsLoading(false);
@@ -82,19 +101,21 @@ async function handleSubmit(values, resetForm)  {
       paddingBottom={"4%"}
     >
       <Stack>
-      <div style={{
-            marginTop: "0%"
-            ,marginLeft: "40%"
-          }}>
-            {isLoading && <Spinner size="xl" />}
-            <Image
-          src="https://firebasestorage.googleapis.com/v0/b/mind-care-b5645.appspot.com/o/images%2Fbrain.png?alt=media&token=b9f9b1e6-d4d9-46c4-8440-fc51f7c33e75"
-          alt="logo"
-          onLoad={handleImageLoad}
-          style={{ display: isLoading ? "none" : "block" }}
-          height="75px"
-          width="75px"
-        />
+        <div
+          style={{
+            marginTop: "0%",
+            marginLeft: "40%",
+          }}
+        >
+          {isLoading && <Spinner size="xl" />}
+          <Image
+            src="https://firebasestorage.googleapis.com/v0/b/mind-care-b5645.appspot.com/o/images%2Fbrain.png?alt=media&token=b9f9b1e6-d4d9-46c4-8440-fc51f7c33e75"
+            alt="logo"
+            onLoad={handleImageLoad}
+            style={{ display: isLoading ? "none" : "block" }}
+            height="75px"
+            width="75px"
+          />
         </div>
         <Text
           fontSize="32"
@@ -110,74 +131,72 @@ async function handleSubmit(values, resetForm)  {
           </Link>
         </Text>
         <Box bg="white" p={6} rounded="md" w={450} boxShadow={"lg"}>
-
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ values, errors, touched, handleChange }) => (
-          <Form>
-            <FormControl
-              isInvalid={errors.email && touched.email}
-              marginBottom="1rem"
-            >
-              <FormLabel htmlFor="email">Email</FormLabel>
-              <Input
-                type="email"
-                name="email"
-                value={values.email}
-                onChange={handleChange}
-                placeholder="Enter your email address"
-              />
-              <FormErrorMessage>{errors.email}</FormErrorMessage>
-            </FormControl>
-            <FormControl
-              isInvalid={errors.password && touched.password}
-              marginBottom="1rem"
-            >
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <Input
-                type="password"
-                name="password"
-                value={values.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-              />
-              <FormErrorMessage>{errors.password}</FormErrorMessage>
-            </FormControl>
-            <div>
-                    <Field
-                      as={Checkbox}
-                      id="rememberMe"
-                      name="rememberMe"
-                      colorScheme="purple"
-                    >
-                      Remember me
-                    </Field>
-                    <Link
-                      to="/forgotpassword"
-                      style={{ marginLeft: "142px", color: colors.secondary }}
-                    >
-                      Forgot Password?
-                    </Link>
-            </div>
-            <Button
-              mt={4}
-              bg={colors.secondary}
-              isLoading={false}
-              color={'white'}
-              type="submit"
-              width="full"
-            >
-              Log In
-            </Button>
-          </Form>
-        )}
-      </Formik>
-      
-    </Box>
-    </Stack>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ values, errors, touched, handleChange }) => (
+              <Form>
+                <FormControl
+                  isInvalid={errors.email && touched.email}
+                  marginBottom="1rem"
+                >
+                  <FormLabel htmlFor="email">Email</FormLabel>
+                  <Input
+                    type="email"
+                    name="email"
+                    value={values.email}
+                    onChange={handleChange}
+                    placeholder="Enter your email address"
+                  />
+                  <FormErrorMessage>{errors.email}</FormErrorMessage>
+                </FormControl>
+                <FormControl
+                  isInvalid={errors.password && touched.password}
+                  marginBottom="1rem"
+                >
+                  <FormLabel htmlFor="password">Password</FormLabel>
+                  <Input
+                    type="password"
+                    name="password"
+                    value={values.password}
+                    onChange={handleChange}
+                    placeholder="Enter your password"
+                  />
+                  <FormErrorMessage>{errors.password}</FormErrorMessage>
+                </FormControl>
+                <div>
+                  <Field
+                    as={Checkbox}
+                    id="rememberMe"
+                    name="rememberMe"
+                    colorScheme="purple"
+                  >
+                    Remember me
+                  </Field>
+                  <Link
+                    to="/forgotpassword"
+                    style={{ marginLeft: "142px", color: colors.secondary }}
+                  >
+                    Forgot Password?
+                  </Link>
+                </div>
+                <Button
+                  mt={4}
+                  bg={colors.secondary}
+                  isLoading={false}
+                  color={"white"}
+                  type="submit"
+                  width="full"
+                >
+                  Log In
+                </Button>
+              </Form>
+            )}
+          </Formik>
+        </Box>
+      </Stack>
     </Flex>
   );
 }

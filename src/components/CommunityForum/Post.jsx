@@ -13,8 +13,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 
-// import { FaRegBell, FaCog } from "react-icons/fa";
-import { PhoneIcon, AddIcon, WarningIcon } from "@chakra-ui/icons";
+import { DeleteIcon } from "@chakra-ui/icons";
 
 function Post() {
   const therapistData = localStorage.getItem("therapist");
@@ -22,10 +21,11 @@ function Post() {
   const [therapistLocal, setTherapistLocal] = useState(
     JSON.parse(therapistData)
   );
-  const [therapistPicture, setTherapistPicture] = useState(
-    therapistLocal.picture
-  );
+  console.log("therapist data: ", therapistLocal);
+  console.log("therapist id: ", therapistLocal._id);
+
   const [postData, setPostData] = useState([]);
+
   useEffect(() => {
     axios.get("/posts").then((response) => {
       setPostData(response.data.data);
@@ -33,6 +33,29 @@ function Post() {
       console.log("tags: ", response.data.data.tags);
     });
   }, []);
+
+  const deletePost = (id) => {
+    console.log("id: ", id);
+    console.log("inside delete post");
+    const found = postData.find((post) => {
+      return post._id == id;
+    });
+    console.log("found: ", found);
+    axios
+      .delete(`/posts/${id}`)
+      .then((response) => {
+        console.log(`Deleted post with ID ${id}`);
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const upvote = () => {};
+
+  const downvote = () => {};
+
   return (
     <div>
       {postData.map((post) => {
@@ -51,12 +74,14 @@ function Post() {
               >
                 <Avatar
                   size={"md"}
-                  src={therapistLocal.picture}
+                  src={post.therapistId.picture}
                   style={{ justifyContent: "flex-end" }}
                 >
                   <AvatarBadge boxSize="1.25em" bg="green.500" />
                 </Avatar>
-                <p style={{ marginTop: "1rem" }}>@mifrawaseem</p>
+                <p style={{ marginTop: "1rem" }}>
+                  {post.therapistId.firstName} {post.therapistId.lastName}
+                </p>
               </Link>
               <ButtonGroup gap="4">
                 {post.tags.map((tag) => {
@@ -95,7 +120,18 @@ function Post() {
               <Text style={{ fontWeight: "bold" }}>{post.title}</Text>
               <Text>{post.body}</Text>
             </CardBody>
-            <CardFooter>{/* <FaRegBell /> */}</CardFooter>
+            <CardFooter>
+              {post.therapistId._id === therapistLocal._id && (
+                <Button
+                  onClick={() => {
+                    deletePost(post._id);
+                  }}
+                >
+                  Delete
+                </Button>
+              )}
+              {/* <PhoneIcon /> */}
+            </CardFooter>
           </Card>
         );
       })}
