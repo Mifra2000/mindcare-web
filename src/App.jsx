@@ -20,6 +20,7 @@ import Forum from "./components/Forum";
 import PostQuestion from "./components/PostQuestion";
 import PostTab from "./components/CommunityForum/TabComponent/PostTab";
 import Tabs from "./components/CommunityForum/TabComponent/Tabs";
+import Post from "./components/CommunityForum/Post";
 
 axios.defaults.baseURL = "http://localhost:8080/api/v1/therapist";
 // "https://mind-care.up.railway.app/api/v1/therapist"

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PersonalNavigator from "./CommunityForum/PersonalNavigator";
 import ForumTagsBar from "./CommunityForum/ForumTagsBar";
 import Post from "./CommunityForum/Post";
+
 import {
   Button,
   Input,
@@ -11,8 +12,11 @@ import {
   InputRightAddon,
 } from "@chakra-ui/react";
 import { Search2Icon } from "@chakra-ui/icons";
+import axios from "axios";
 
 function Forum() {
+  const [searchPost, setSearchPost] = useState("");
+
   return (
     <div className="forum">
       <ForumTagsBar />
@@ -33,6 +37,11 @@ function Forum() {
               type="text"
               placeholder="Search posts"
               border="1px solid #949494"
+              value={searchPost}
+              onChange={(e) => {
+                var lowerCase = e.target.value.toLowerCase();
+                setSearchPost(lowerCase);
+              }}
             />
           </InputGroup>
         </div>
