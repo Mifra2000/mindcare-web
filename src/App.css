@@ -40,3 +40,8 @@
 .read-the-docs {
   color: #888;
 }
+
+.read-or-hide{
+  color: rgb(192,192,192);
+  cursor: pointer;
+}
