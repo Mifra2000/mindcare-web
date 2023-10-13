@@ -19,6 +19,8 @@ import SinglePost from "../CommunityForum/SinglePost";
 function Post() {
   const therapistLocal = JSON.parse(localStorage.getItem("therapist"));
   const [postData, setPostData] = useState([]);
+  const [voteStates, setVoteStates] = useState({});
+
   useEffect(() => {
     axios.get("/posts").then((response) => {
       console.log("post: ", response.data.data);
@@ -28,9 +30,20 @@ function Post() {
   }, []);
 
   return (
-    <div>
+    <div className="posts">
       {postData.map((post) => {
-        return <SinglePost key={post._id} post={post} />;
+        const { upvote, downvote } = voteStates[post._id] || {
+          upvote: false,
+          downvote: false,
+        };
+        return (
+          <SinglePost
+            key={post._id}
+            post={post}
+            upvote={upvote}
+            downvote={downvote}
+          />
+        );
       })}
     </div>
   );

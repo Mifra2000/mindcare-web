@@ -67,6 +67,8 @@ button:focus-visible {
   width: 18%;
   height: 100%;
   border-right: 1px solid rgb(182, 176, 176);
+  
+  
 }
 .forum-guidelines ol{
   padding-left:2rem;
@@ -337,4 +339,8 @@ padding: 1rem;
   button {
     background-color: #f9f9f9;
   }
+}
+.posts{
+  max-height: 553px; /* Set the maximum height according to your design */
+  overflow-y: auto;
 }

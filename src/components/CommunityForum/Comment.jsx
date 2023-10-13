@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Button, Input } from "@chakra-ui/react";
 import axios from "axios";
+import Reply from "../CommunityForum/Reply";
+import { Card, Button, Textarea } from "@chakra-ui/react";
+import { BiComment } from "react-icons/bi";
 
-export default function Comment({ postId, therapistId }) {
+export default function Comment({ postId, therapistId, commentId }) {
   const [isReplying, setIsReplying] = useState(false);
   const [commentBody, setCommentBody] = useState("");
   const [commentState, setCommentState] = useState(false);
@@ -26,8 +28,12 @@ export default function Comment({ postId, therapistId }) {
     <div>
       {/* <span>{body}</span> */}
       {isReplying ? (
-        <div>
-          <Button size="sm" onClick={postComment}>
+        <div style={{ paddingTop: "2rem", paddingBottom: "0.5rem" }}>
+          <Button
+            style={{ marginRight: "1rem" }}
+            size="sm"
+            onClick={postComment}
+          >
             Post
           </Button>
           <Button size="sm" onClick={() => setIsReplying(false)}>
@@ -35,17 +41,19 @@ export default function Comment({ postId, therapistId }) {
           </Button>
         </div>
       ) : (
-        <Button size="sm" onClick={() => setIsReplying(true)}>
-          Reply
-        </Button>
+        <BiComment
+          style={{ marginLeft: "0.5rem" }}
+          onClick={() => setIsReplying(true)}
+        ></BiComment>
       )}
       {isReplying && (
-        <Input
+        <Textarea
           placeholder="What are your thoughts?"
           value={commentBody}
           onChange={(e) => setCommentBody(e.target.value)}
-        ></Input>
+        ></Textarea>
       )}
+      {/* <Reply commentId={commentId} postId={postId} therapistId={therapistId} /> */}
     </div>
   );
 }
